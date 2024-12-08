@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useSprings, animated, to as interpolate } from '@react-spring/web';
 import { useDrag } from 'react-use-gesture';
 import styles from './CardDeckSection.module.css';
@@ -42,27 +42,15 @@ const trans = (r: number, s: number) =>
 
 function Deck() {
   const [gone] = useState(() => new Set());
-  const directions = useRef<{ [key: number]: number }>({});
-  const dragStarted = useRef(false);
-
-  const [props, api] = useSprings(baseCards.length, i => ({
-    ...to(i),
+  const [props, api] = useSprings(baseCards.length, () => ({
+    ...to(0),
     from: from(),
   }));
 
-  const bind = useDrag(({ args: [index], first, last, down, movement: [mx], direction: [xDir], velocity }) => {
-    // Only process if it's a real user interaction (touch or mouse)
-    if (first) dragStarted.current = true;
-    if (!dragStarted.current) return;
-
+  const bind = useDrag(({ args: [index], down, movement: [mx], direction: [xDir], velocity }) => {
     const trigger = velocity > 0.2;
     const dir = xDir < 0 ? -1 : 1;
-
-    // Only add to gone if there was actual user interaction
-    if (!down && trigger && last) {
-      gone.add(index);
-      directions.current[index] = dir;
-    }
+    if (!down && trigger) gone.add(index);
 
     api.start(i => {
       if (index !== i) return;
@@ -79,15 +67,11 @@ function Deck() {
       };
     });
 
-    // Reset all cards when all are gone
-    if (!down && gone.size === baseCards.length) {
+    if (!down && gone.size === baseCards.length)
       setTimeout(() => {
-        dragStarted.current = false;
         gone.clear();
-        directions.current = {};
         api.start(i => to(i));
       }, 600);
-    }
   });
 
   return (
@@ -96,11 +80,9 @@ function Deck() {
         <animated.div className={styles.deck} key={i} style={{ x, y }}>
           <animated.div
             {...bind(i)}
-            className={styles.card}
             style={{
               transform: interpolate([rot, scale], trans),
               backgroundImage: `url(${baseCards[i]})`,
-              touchAction: 'none',
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg">
@@ -119,9 +101,25 @@ function Deck() {
 
 function CardDeckSection() {
   return (
-    <div className={styles.container}>
-      <Deck />
-    </div>
+    <section className="relative py-20 mt-20 overflow-hidden justify-center bg-gradient-to-br from-stone-100 to-amber-50">
+      <div className="absolute inset-0 bg-[url('/noise.png')] mix-blend-soft-light opacity-50" />
+      <div className="container mx-auto px-4 relative">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
+            Explore Our Collection
+          </h2>
+          <p className="text-lg text-stone-600 mt-4">
+            Swipe or drag to explore our premium tiles and stones
+          </p>
+        </div>
+        
+        <div className="relative h-[600px] z-10">
+          <div className={styles.container}>
+            <Deck />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
