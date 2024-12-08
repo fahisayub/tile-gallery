@@ -17,12 +17,12 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Mukalel Paving Stone & Tiles - Premium Natural Stone & Tiles in Kotamangalam",
-  description: "Leading stone and tile provider in Pallarimangalam, Kotamangalam. Visit our showroom for premium natural stones, tiles, and expert installation services.",
-  keywords: "Mukalel Paving Stone & Tiles, Pallarimangalam, Kotamangalam, Kerala, natural stone, tiles, paving",
+  title: "Mukalel Paving Stone & Tiles - Premium Natural Stone & Tiles in Kothamangalam",
+  description: "Leading stone and tile provider in Pallarimangalam, Kothamangalam. Visit our showroom for premium natural stones, tiles, and expert installation services.",
+  keywords: "Mukalel Paving Stone & Tiles, Pallarimangalam, Kothamangalam, Kerala, natural stone, tiles, paving",
   openGraph: {
-    title: "Mukalel Paving Stone & Tiles - Premium Natural Stone & Tiles in Kotamangalam",
-    description: "Leading stone and tile provider in Pallarimangalam, Kotamangalam",
+    title: "Mukalel Paving Stone & Tiles - Premium Natural Stone & Tiles in Kothamangalam",
+    description: "Leading stone and tile provider in Pallarimangalam, Kothamangalam",
     images: ['/mlogo.png'],
   },
   icons: {

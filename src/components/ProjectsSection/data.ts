@@ -21,7 +21,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/1.png',
     category: 'natural-stone',
     material: 'Premium Granite',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/1.png', '/image/tiles/2.png']
   },
   {
@@ -41,7 +41,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/3.png',
     category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/5.png', '/image/tiles/6.png']
   },
   {
@@ -59,9 +59,9 @@ export const projects: Project[] = [
     title: 'Luxury Stone Collection',
     description: 'Premium natural stones for sophisticated spaces.',
     imagePath: '/image/tiles/5.png',
-    category: 'natural-stone', 
+    category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/9.png', '/image/tiles/10.png']
   },
   {
@@ -75,20 +75,20 @@ export const projects: Project[] = [
     images: ['/image/tiles/11.png', '/image/tiles/12.png']
   },
   {
-    id: '7', 
+    id: '7',
     title: 'Classic Stone Series',
     description: 'Timeless natural stone collection.',
     imagePath: '/image/tiles/7.png',
     category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/13.png', '/image/tiles/14.png']
   },
   {
     id: '8',
     title: 'Premium Floor Collection',
     description: 'High-end floor tiles for luxurious spaces.',
-    imagePath: '/image/tiles/8.png', 
+    imagePath: '/image/tiles/8.png',
     category: 'floor-tiles',
     material: 'Premium Tiles',
     location: 'Pallarimangalam',
@@ -101,7 +101,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/9.png',
     category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/17.png', '/image/tiles/1.png']
   },
   {
@@ -111,7 +111,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/10.png',
     category: 'floor-tiles',
     material: 'Paving Tiles',
-    location: 'Pallarimangalam', 
+    location: 'Pallarimangalam',
     images: ['/image/tiles/2.png', '/image/tiles/3.png']
   },
   {
@@ -121,7 +121,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/11.png',
     category: 'natural-stone',
     material: 'Premium Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/4.png', '/image/tiles/5.png']
   },
   {
@@ -141,7 +141,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/13.png',
     category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/8.png', '/image/tiles/9.png']
   },
   {
@@ -161,7 +161,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/15.png',
     category: 'natural-stone',
     material: 'Natural Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/12.png', '/image/tiles/13.png']
   },
   {
@@ -181,7 +181,7 @@ export const projects: Project[] = [
     imagePath: '/image/tiles/17.png',
     category: 'natural-stone',
     material: 'Premium Stone',
-    location: 'Kotamangalam',
+    location: 'Kothamangalam',
     images: ['/image/tiles/16.png', '/image/tiles/17.png']
   }
 

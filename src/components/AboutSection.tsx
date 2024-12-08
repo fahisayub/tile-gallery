@@ -45,7 +45,7 @@ const stats = [
     id: 5,
     icon: MapPin,
     value: "Pallarimangalam",
-    label: "Kotamangalam, Kerala",
+    label: "Kothamangalam, Kerala",
     size: "col-span-2",
     order: "order-6",
     color: "from-amber-500/20 to-amber-600/20"
@@ -86,7 +86,7 @@ export const AboutSection = () => {
               `} />
               <div className="relative h-full bg-white/90 backdrop-blur-sm rounded-2xl p-4 md:p-6 transform group-hover:translate-y-[-4px] transition-all duration-300 ease-out border border-stone-200/50">
                 <div className="flex flex-col h-full justify-between">
-                  <stat.icon 
+                  <stat.icon
                     className={`w-6 h-6 md:w-8 md:h-8 mb-3 md:mb-4 text-amber-600`}
                   />
                   <div>
@@ -117,8 +117,8 @@ export const AboutSection = () => {
 
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-lg text-stone-600">
-            Mukalel Paving Stone & Tiles has been a trusted name in premium natural stones and tiles. 
-            Based in Pallarimangalam, Kotamangalam, we offer an extensive collection of high-quality materials 
+            Mukalel Paving Stone & Tiles has been a trusted name in premium natural stones and tiles.
+            Based in Pallarimangalam, Kothamangalam, we offer an extensive collection of high-quality materials
             and expert installation services.
           </p>
         </div>

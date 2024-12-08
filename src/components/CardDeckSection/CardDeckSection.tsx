@@ -1,31 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSprings, animated, to as interpolate } from '@react-spring/web';
-import { useDrag } from 'react-use-gesture';
 import styles from './CardDeckSection.module.css';
 
 const baseCards = [
-  '/image/tiles/1.png',
-  '/image/tiles/3.png',
-  '/image/tiles/6.png',
-  '/image/tiles/15.png',
-  '/image/tiles/7.png',
-  '/image/tiles/8.png',
-  '/image/tiles/11.png',
-  '/image/tiles/10.png',
   '/image/tiles/9.png',
+  '/image/tiles/10.png',
+  '/image/tiles/11.png',
+  '/image/tiles/8.png',
+  '/image/tiles/7.png',
+  '/image/tiles/15.png',
+  '/image/tiles/6.png',
+  '/image/tiles/3.png',
+  '/image/tiles/1.png',
 ];
 
 const titles = [
-  'Premium Floor Tiles',
-  'Natural Stone Collection',
-  'Designer Wall Tiles',
-  'Outdoor Tiles',
-  'Luxury Granite',
-  'Modern Living Room Tiles',
   'Kitchen Collection',
-];
+  'Modern Living Room Tiles',
+  'Luxury Granite',
+  'Outdoor Tiles',
+  'Designer Wall Tiles',
+  'Natural Stone Collection',
+  'Premium Floor Tiles',
+].reverse();
 
 const to = (i: number) => ({
   x: 0,
@@ -33,56 +32,122 @@ const to = (i: number) => ({
   scale: 1,
   rot: -10 + Math.random() * 20,
   delay: i * 100,
+  immediate: true,
 });
 
-const from = () => ({ x: 0, rot: 0, scale: 1.5, y: -1000 });
+const from = () => ({ 
+  x: 0, 
+  rot: 0, 
+  scale: 1,
+  y: 0 
+});
 
 const trans = (r: number, s: number) =>
   `perspective(1500px) rotateX(30deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`;
 
 function Deck() {
   const [gone] = useState(() => new Set());
-  const [props, api] = useSprings(baseCards.length, () => ({
-    ...to(0),
+  const [isAnimating, setIsAnimating] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [cardOrder, setCardOrder] = useState([...Array(baseCards.length).keys()]);
+
+  const [props, api] = useSprings(baseCards.length, i => ({
+    ...to(i),
     from: from(),
   }));
 
-  const bind = useDrag(({ args: [index], down, movement: [mx], direction: [xDir], velocity }) => {
-    const trigger = velocity > 0.2;
-    const dir = xDir < 0 ? -1 : 1;
-    if (!down && trigger) gone.add(index);
+  const animateCard = (index: number) => {
+    const dir = 1;
+    gone.add(index);
 
     api.start(i => {
       if (index !== i) return;
-      const isGone = gone.has(index);
-      const x = isGone ? (200 + window.innerWidth) * dir : down ? mx : 0;
-      const rot = mx / 100 + (isGone ? dir * 10 * velocity : 0);
-      const scale = down ? 1.1 : 1;
+      const x = (200 + window.innerWidth) * dir;
+      const rot = (dir * 10 * 2);
       return {
         x,
         rot,
-        scale,
+        scale: 1,
         delay: undefined,
-        config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 },
+        config: { 
+          friction: 50, 
+          tension: 200, 
+          duration: 1500 
+        },
+        onRest: () => {
+          setCardOrder(prevOrder => {
+            const newOrder = [...prevOrder];
+            const orderIndex = newOrder.indexOf(index);
+            const [removedCard] = newOrder.splice(orderIndex, 1);
+            newOrder.unshift(removedCard);
+            return newOrder;
+          });
+
+          api.start(j => {
+            if (j === index) {
+              return {
+                x: 0,
+                y: 0,
+                rot: 0,
+                scale: 1,
+                immediate: true,
+              };
+            }
+          });
+
+          gone.delete(index);
+        },
       };
     });
+  };
 
-    if (!down && gone.size === baseCards.length)
-      setTimeout(() => {
-        gone.clear();
-        api.start(i => to(i));
-      }, 600);
-  });
+  const startAnimation = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+
+    let currentIndex = baseCards.length - 1;
+
+    const animate = () => {
+      if (true) {
+        const actualIndex = cardOrder[currentIndex];
+        animateCard(actualIndex);
+        currentIndex = (currentIndex - 1 + baseCards.length) % baseCards.length;
+        timeoutRef.current = setTimeout(animate, 1700);
+      }
+    };
+
+    timeoutRef.current = setTimeout(animate, 2200);
+  };
+
+  useEffect(() => {
+    startAnimation();
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
       {props.map(({ x, y, rot, scale }, i) => (
-        <animated.div className={styles.deck} key={i} style={{ x, y }}>
+        <animated.div
+          className={styles.deck}
+          key={i}
+          style={{
+            x,
+            y,
+            zIndex: baseCards.length - cardOrder.indexOf(i),
+            position: 'absolute',
+            transform: `translateY(${cardOrder.indexOf(i) * -4}px)`,
+          }}
+        >
           <animated.div
-            {...bind(i)}
+            className={styles.card}
             style={{
               transform: interpolate([rot, scale], trans),
               backgroundImage: `url(${baseCards[i]})`,
+              touchAction: 'none',
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg">
@@ -101,25 +166,9 @@ function Deck() {
 
 function CardDeckSection() {
   return (
-    <section className="relative py-20 mt-20 overflow-hidden justify-center bg-gradient-to-br from-stone-100 to-amber-50">
-      <div className="absolute inset-0 bg-[url('/noise.png')] mix-blend-soft-light opacity-50" />
-      <div className="container mx-auto px-4 relative">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
-            Explore Our Collection
-          </h2>
-          <p className="text-lg text-stone-600 mt-4">
-            Swipe or drag to explore our premium tiles and stones
-          </p>
-        </div>
-        
-        <div className="relative h-[600px] z-10">
-          <div className={styles.container}>
-            <Deck />
-          </div>
-        </div>
-      </div>
-    </section>
+    <div className={styles.container}>
+      <Deck />
+    </div>
   );
 }
 

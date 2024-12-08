@@ -7,10 +7,10 @@ export const Footer = () => {
         { name: 'Tile Gallery', href: '#collections' },
         { name: 'About Us', href: '#about' },
         { name: 'Contact Us', href: '#contact' },
-        { 
-            name: 'Get Directions', 
+        {
+            name: 'Get Directions',
             href: 'https://maps.app.goo.gl/B7RSb6ifDFCisbi98',
-            external: true 
+            external: true
         }
     ];
 
@@ -45,8 +45,8 @@ export const Footer = () => {
                                 rel="noopener noreferrer"
                                 className="flex items-center hover:text-amber-500 transition-colors group"
                             >
-                                <MapPin  className="mr-2 size-9 text-amber-600 group-hover:scale-110 transition-transform" />
-                                <span>Mukalel Paving Stone & Tiles ,Near Jamaath Hall, Pallarimangalam, Kotamangalam, Kerala 686671</span>
+                                <MapPin className="mr-2 size-9 text-amber-600 group-hover:scale-110 transition-transform" />
+                                <span>Mukalel Paving Stone & Tiles ,Near Jamaath Hall, Pallarimangalam, Kothamangalam, Kerala 686671</span>
                             </a>
                             <a
                                 href="tel:9961206232"
