@@ -1,7 +1,6 @@
 'use client';
 
 import { Project } from '@/types';
-import { Share } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BsWhatsapp } from 'react-icons/bs';
