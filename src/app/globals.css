@@ -7,15 +7,56 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: linear-gradient(
+    135deg,
+    #f3f4f6 0%,
+    #e5e7eb 25%,
+    #d1d5db 50%,
+    #9ca3af 75%,
+    #6b7280 100%
+  );
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+.stone-button {
+  @apply bg-gradient-to-br from-stone-100 to-stone-200 
+         shadow-inner border border-stone-200/50 
+         hover:from-stone-200 hover:to-stone-300 
+         transition-all duration-300;
+}
+
+.stone-card {
+  @apply bg-gradient-to-br from-stone-50 to-stone-100 
+         shadow-lg border border-stone-200/50 
+         hover:shadow-xl transition-all duration-300;
+}
+
+/* Add these styles to hide scrollbars */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Height of your navbar */
 }
