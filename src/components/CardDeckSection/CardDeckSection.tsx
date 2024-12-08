@@ -50,7 +50,7 @@ function Deck() {
     from: from(),
   }));
 
-  const bind = useDrag(({ args: [index], first, last, down, movement: [mx], direction: [xDir], velocity, touches }) => {
+  const bind = useDrag(({ args: [index], first, last, down, movement: [mx], direction: [xDir], velocity }) => {
     // Only process if it's a real user interaction (touch or mouse)
     if (first) dragStarted.current = true;
     if (!dragStarted.current) return;
