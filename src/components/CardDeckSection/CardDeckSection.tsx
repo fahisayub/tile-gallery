@@ -43,17 +43,23 @@ const trans = (r: number, s: number) =>
 function Deck() {
   const [gone] = useState(() => new Set());
   const directions = useRef<{ [key: number]: number }>({});
+  const dragStarted = useRef(false);
 
   const [props, api] = useSprings(baseCards.length, i => ({
     ...to(i),
     from: from(),
   }));
 
-  const bind = useDrag(({ args: [index], down, movement: [mx], direction: [xDir], velocity }) => {
+  const bind = useDrag(({ args: [index], first, last, down, movement: [mx], direction: [xDir], velocity, touches }) => {
+    // Only process if it's a real user interaction (touch or mouse)
+    if (first) dragStarted.current = true;
+    if (!dragStarted.current) return;
+
     const trigger = velocity > 0.2;
     const dir = xDir < 0 ? -1 : 1;
 
-    if (!down && trigger) {
+    // Only add to gone if there was actual user interaction
+    if (!down && trigger && last) {
       gone.add(index);
       directions.current[index] = dir;
     }
@@ -73,25 +79,13 @@ function Deck() {
       };
     });
 
+    // Reset all cards when all are gone
     if (!down && gone.size === baseCards.length) {
       setTimeout(() => {
-        const currentDirections = { ...directions.current };
+        dragStarted.current = false;
         gone.clear();
         directions.current = {};
-
-        api.start(i => {
-          const dir = currentDirections[i] || 1;
-          return {
-            to: to(i),
-            from: {
-              x: (200 + window.innerWidth) * dir,
-              rot: dir * 10 * velocity,
-              scale: 1,
-              y: i * -4
-            },
-            config: { friction: 50, tension: 500 }
-          };
-        });
+        api.start(i => to(i));
       }, 600);
     }
   });
@@ -106,6 +100,7 @@ function Deck() {
             style={{
               transform: interpolate([rot, scale], trans),
               backgroundImage: `url(${baseCards[i]})`,
+              touchAction: 'none',
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg">
