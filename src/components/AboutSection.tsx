@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Trophy, Users, Grid, Star } from 'lucide-react';
+import { MapPin, Calendar, Trophy, Users, Grid } from 'lucide-react';
 import Image from 'next/image';
+import { FaStar, FaStarHalf } from 'react-icons/fa';
 
 const stats = [
   {
@@ -52,9 +53,17 @@ const stats = [
   },
   {
     id: 6,
-    icon: Star,
-    value: "Premium",
-    label: "Quality Products",
+    CustomIcon: () => (
+      <div className="flex items-center gap-1">
+        <FaStar className="text-yellow-400" />
+        <FaStar className="text-yellow-400" />
+        <FaStar className="text-yellow-400" />
+        <FaStar className="text-yellow-400" />
+        <FaStarHalf className="text-yellow-400" />
+      </div>
+    ),
+    value: "4.8",
+    label: "Google Rating",
     size: "col-span-2 md:col-span-1",
     order: "order-4",
     color: "from-stone-700/20 to-stone-800/20"
@@ -86,9 +95,11 @@ export const AboutSection = () => {
               `} />
               <div className="relative h-full bg-white/90 backdrop-blur-sm rounded-2xl p-4 md:p-6 transform group-hover:translate-y-[-4px] transition-all duration-300 ease-out border border-stone-200/50">
                 <div className="flex flex-col h-full justify-between">
-                  <stat.icon
-                    className={`w-6 h-6 md:w-8 md:h-8 mb-3 md:mb-4 text-amber-600`}
-                  />
+                  {stat.CustomIcon ? (
+                    <stat.CustomIcon />
+                  ) : (
+                    <stat.icon className="w-6 h-6 md:w-8 md:h-8 mb-3 md:mb-4 text-amber-600" />
+                  )}
                   <div>
                     <div className="text-xl md:text-2xl font-bold mb-1 text-stone-900">
                       {stat.value}

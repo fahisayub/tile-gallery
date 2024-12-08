@@ -4,6 +4,7 @@ import { Project } from '@/types';
 import { Share } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { BsWhatsapp } from 'react-icons/bs';
 
 interface ProjectCardProps {
   project: Project;
@@ -47,9 +48,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {/* Content only visible on hover */}
         <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3">
-            <h3 className="text-white text-xl font-bold">
+            <h4 className="text-white text-md font-bold">
               {project.title}
-            </h3>
+            </h4>
             {project.material && (
               <div className="text-amber-500 text-sm font-medium mt-1">
                 {project.material}
@@ -62,9 +63,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="w-full flex justify-center transform translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
           <button
             onClick={shareOnWhatsApp}
-            className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors duration-300"
+            className="bg-green-500 text-sm hover:bg-green-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors duration-300"
           >
-            <Share size={20} />
+            <BsWhatsapp size={15} />
             Contact on WhatsApp
           </button>
         </div>

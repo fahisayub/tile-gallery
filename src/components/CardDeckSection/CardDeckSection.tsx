@@ -5,15 +5,18 @@ import { useSprings, animated, to as interpolate } from '@react-spring/web';
 import styles from './CardDeckSection.module.css';
 
 const baseCards = [
-  '/image/tiles/9.png',
-  '/image/tiles/10.png',
-  '/image/tiles/11.png',
-  '/image/tiles/8.png',
-  '/image/tiles/7.png',
-  '/image/tiles/15.png',
-  '/image/tiles/6.png',
-  '/image/tiles/3.png',
-  '/image/tiles/1.png',
+  '/image/stones/9.png',
+  '/image/stones/10.png',
+  '/image/stones/6.png',
+  '/image/stones/7.png',
+  '/image/stones/2.png',
+  '/image/stones/20.png',
+  '/image/stones/2.png',
+  '/image/stones/17.png',
+  '/image/stones/16.png',
+  '/image/stones/5.png',
+  '/image/stones/4.png',
+  '/image/stones/1.png',
 ];
 
 const titles = [
@@ -30,7 +33,7 @@ const to = (i: number) => ({
   x: 0,
   y: i * -4,
   scale: 1,
-  rot: -10 + Math.random() * 20,
+  rot: 0,
   delay: i * 100,
   immediate: true,
 });
@@ -43,7 +46,7 @@ const from = () => ({
 });
 
 const trans = (r: number, s: number) =>
-  `perspective(1500px) rotateX(30deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`;
+  `perspective(1500px) rotateX(30deg) rotateY(${Math.min(r / 10, 15)}deg) rotateZ(${Math.min(r, 20)}deg) scale(${s})`;
 
 function Deck() {
   const [gone] = useState(() => new Set());
@@ -54,6 +57,11 @@ function Deck() {
   const [props, api] = useSprings(baseCards.length, i => ({
     ...to(i),
     from: from(),
+    config: {
+      mass: 1,
+      tension: 180,
+      friction: 20
+    }
   }));
 
   const animateCard = (index: number) => {
@@ -63,7 +71,7 @@ function Deck() {
     api.start(i => {
       if (index !== i) return;
       const x = (200 + window.innerWidth) * dir;
-      const rot = (dir * 10 * 2);
+      const rot = dir * 15;
       return {
         x,
         rot,
