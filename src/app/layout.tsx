@@ -39,6 +39,9 @@ export const metadata: Metadata = {
       url: '/Mlogoonly.png',
     },
   },
+  verification: {
+    google: 'qynmd2HOA4dyzgblcxL1T62vXDxqahiY6wbNt5pwb00',
+  },
 };
 
 export default function RootLayout({
