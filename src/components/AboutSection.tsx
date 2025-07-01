@@ -4,6 +4,19 @@ import { motion } from 'framer-motion';
 import { MapPin, Calendar, Trophy, Users, Grid } from 'lucide-react';
 import Image from 'next/image';
 import { FaStar, FaStarHalf } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+
+interface AboutSettings {
+  title: string;
+  description: string;
+  companyLogo: string;
+}
+
+const defaultSettings: AboutSettings = {
+  title: 'About Us',
+  description: 'Mukalel Paving Stone & Tiles has been a trusted name in premium natural stones and tiles. Based in Pallarimangalam, Kothamangalam, we offer an extensive collection of high-quality materials and expert installation services.',
+  companyLogo: '/nobglogo.png'
+};
 
 const stats = [
   {
@@ -71,11 +84,41 @@ const stats = [
 ];
 
 export const AboutSection = () => {
+  const [aboutSettings, setAboutSettings] = useState<AboutSettings>(defaultSettings);
+
+  useEffect(() => {
+    fetchAboutSettings();
+  }, []);
+
+  const fetchAboutSettings = async () => {
+    try {
+      const response = await fetch('/api/homepage-settings');
+      const data = await response.json();
+      
+      if (data.success && data.settings.aboutUs) {
+        setAboutSettings({
+          title: data.settings.aboutUs.title || defaultSettings.title,
+          description: data.settings.aboutUs.description || defaultSettings.description,
+          companyLogo: data.settings.aboutUs.companyLogo || defaultSettings.companyLogo,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching about settings:', error);
+      // Keep default settings on error
+    }
+  };
+
   return (
     <section id="about" className="py-20 bg-stone-50">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
-          About <span className="text-amber-600">Us</span>
+          {aboutSettings.title.includes('About') ? (
+            <>
+              About <span className="text-amber-600">Us</span>
+            </>
+          ) : (
+            aboutSettings.title
+          )}
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto mb-16">
@@ -117,7 +160,7 @@ export const AboutSection = () => {
         <div className="flex flex-col items-center mb-12">
           <div className="relative w-32 h-32">
             <Image
-              src="/nobglogo.png"
+              src={aboutSettings.companyLogo}
               alt="Mukalel Paving Stone & Tiles"
               fill
               className="object-contain"
@@ -128,9 +171,7 @@ export const AboutSection = () => {
 
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-lg text-stone-600">
-            Mukalel Paving Stone & Tiles has been a trusted name in premium natural stones and tiles.
-            Based in Pallarimangalam, Kothamangalam, we offer an extensive collection of high-quality materials
-            and expert installation services.
+            {aboutSettings.description}
           </p>
         </div>
       </div>
