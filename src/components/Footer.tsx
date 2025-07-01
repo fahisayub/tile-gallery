@@ -1,6 +1,51 @@
+'use client';
+
 import { Phone, Clock, MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+interface ContactDetails {
+  phone: string;
+  address: string;
+  mapUrl: string;
+  workingHours: string;
+  companyName: string;
+}
+
+const defaultContactDetails: ContactDetails = {
+  phone: '+91 9961206232',
+  address: 'Mukalel Paving Stone & Tiles, Near Jamaath Hall, Pallarimangalam, Kothamangalam, Kerala 686671',
+  mapUrl: 'https://maps.app.goo.gl/B7RSb6ifDFCisbi98',
+  workingHours: 'Mon-Sat: 9AM-7PM',
+  companyName: 'Mukalel Paving Stone & Tiles'
+};
 
 export const Footer = () => {
+    const [contactDetails, setContactDetails] = useState<ContactDetails>(defaultContactDetails);
+
+    useEffect(() => {
+        fetchContactDetails();
+    }, []);
+
+    const fetchContactDetails = async () => {
+        try {
+            const response = await fetch('/api/homepage-settings');
+            const data = await response.json();
+            
+            if (data.success && data.settings.contactDetails) {
+                setContactDetails({
+                    phone: data.settings.contactDetails.phone || defaultContactDetails.phone,
+                    address: data.settings.contactDetails.address || defaultContactDetails.address,
+                    mapUrl: data.settings.contactDetails.mapUrl || defaultContactDetails.mapUrl,
+                    workingHours: data.settings.contactDetails.workingHours || defaultContactDetails.workingHours,
+                    companyName: data.settings.contactDetails.companyName || defaultContactDetails.companyName,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching contact details:', error);
+            // Keep default settings on error
+        }
+    };
+
     const quickLinks = [
         { name: 'Our Projects', href: '#collections' },
         { name: 'Stone Collection', href: '#collections' },
@@ -9,7 +54,7 @@ export const Footer = () => {
         { name: 'Contact Us', href: '#contact' },
         {
             name: 'Get Directions',
-            href: 'https://maps.app.goo.gl/B7RSb6ifDFCisbi98',
+            href: contactDetails.mapUrl,
             external: true
         }
     ];
@@ -32,7 +77,13 @@ export const Footer = () => {
                 <div className="grid md:grid-cols-3 gap-8">
                     <div>
                         <span className="text-xl font-bold text-stone-100">
-                            Mukalel<span className="text-amber-600"> Paving Stone & Tiles</span>
+                            {contactDetails.companyName.includes('Mukalel') ? (
+                                <>
+                                    Mukalel<span className="text-amber-600"> Paving Stone & Tiles</span>
+                                </>
+                            ) : (
+                                contactDetails.companyName
+                            )}
                         </span>
                         <p className="mt-4">Excellence in stone and tile craftsmanship serving Kerala since 1998.</p>
                     </div>
@@ -40,24 +91,24 @@ export const Footer = () => {
                         <h4 className="text-stone-100 font-medium mb-4">Contact</h4>
                         <div className="space-y-3">
                             <a
-                                href="https://maps.app.goo.gl/B7RSb6ifDFCisbi98"
+                                href={contactDetails.mapUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center hover:text-amber-500 transition-colors group"
                             >
                                 <MapPin className="mr-2 size-9 text-amber-600 group-hover:scale-110 transition-transform" />
-                                <span>Mukalel Paving Stone & Tiles ,Near Jamaath Hall, Pallarimangalam, Kothamangalam, Kerala 686671</span>
+                                <span>{contactDetails.address}</span>
                             </a>
                             <a
-                                href="tel:9961206232"
+                                href={`tel:${contactDetails.phone.replace(/\s+/g, '')}`}
                                 className="flex items-center hover:text-amber-500 transition-colors group"
                             >
                                 <Phone className="mr-2 size-4 text-amber-600 group-hover:scale-110 transition-transform" />
-                                <span>+91 9961206232</span>
+                                <span>{contactDetails.phone}</span>
                             </a>
                             <div className="flex items-center">
                                 <Clock className="mr-2 size-4 text-amber-600" />
-                                <span>Mon-Sat: 9AM-7PM</span>
+                                <span>{contactDetails.workingHours}</span>
                             </div>
                         </div>
                     </div>
@@ -81,7 +132,7 @@ export const Footer = () => {
 
                 <div className="fixed bottom-6 right-6 md:hidden">
                     <a
-                        href="tel:9961206232"
+                        href={`tel:${contactDetails.phone.replace(/\s+/g, '')}`}
                         className="flex items-center justify-center w-14 h-14 bg-amber-600 text-white rounded-full shadow-lg hover:bg-amber-500 transition-colors"
                     >
                         <Phone size={24} />

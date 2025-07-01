@@ -4,7 +4,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSprings, animated, to as interpolate } from '@react-spring/web';
 import styles from './CardDeckSection.module.css';
 
-const baseCards = [
+interface PinnedImage {
+  _id: string;
+  url: string;
+  title: string;
+}
+
+const fallbackCards = [
   '/image/stones/9.png',
   '/image/stones/10.png',
   '/image/stones/6.png',
@@ -19,7 +25,7 @@ const baseCards = [
   '/image/stones/1.png',
 ];
 
-const titles = [
+const fallbackTitles = [
   'Kitchen Collection',
   'Modern Living Room Tiles',
   'Luxury Granite',
@@ -52,9 +58,43 @@ function Deck() {
   const [gone] = useState(() => new Set());
   const [isAnimating, setIsAnimating] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [cardOrder, setCardOrder] = useState([...Array(baseCards.length).keys()]);
+  const [cardOrder, setCardOrder] = useState<number[]>([]);
+  const [cards, setCards] = useState<string[]>([]);
+  const [titles, setTitles] = useState<string[]>([]);
 
-  const [props, api] = useSprings(baseCards.length, i => ({
+  useEffect(() => {
+    fetchPinnedImages();
+  }, []);
+
+  const fetchPinnedImages = async () => {
+    try {
+      const response = await fetch('/api/homepage-settings');
+      const data = await response.json();
+      
+      if (data.success && data.settings.heroSection.pinnedImages?.length > 0) {
+        const pinnedImages = data.settings.heroSection.pinnedImages;
+        const imageUrls = pinnedImages.map((img: PinnedImage) => img.url);
+        const imageTitles = pinnedImages.map((img: PinnedImage) => img.title || 'Stone Collection');
+        
+        setCards(imageUrls);
+        setTitles(imageTitles);
+        setCardOrder([...Array(imageUrls.length).keys()]);
+      } else {
+        // Use fallback images if no pinned images are found
+        setCards(fallbackCards);
+        setTitles(fallbackTitles);
+        setCardOrder([...Array(fallbackCards.length).keys()]);
+      }
+    } catch (error) {
+      console.error('Error fetching pinned images:', error);
+      // Use fallback images on error
+      setCards(fallbackCards);
+      setTitles(fallbackTitles);
+      setCardOrder([...Array(fallbackCards.length).keys()]);
+    }
+  };
+
+  const [props, api] = useSprings(cards.length, i => ({
     ...to(i),
     from: from(),
     config: {
@@ -62,7 +102,7 @@ function Deck() {
       tension: 180,
       friction: 20
     }
-  }));
+  }), [cards.length]);
 
   const animateCard = (index: number) => {
     const dir = 1;
@@ -110,16 +150,16 @@ function Deck() {
   };
 
   const startAnimation = () => {
-    if (isAnimating) return;
+    if (isAnimating || cards.length === 0) return;
     setIsAnimating(true);
 
-    let currentIndex = baseCards.length - 1;
+    let currentIndex = cards.length - 1;
 
     const animate = () => {
       if (true) {
         const actualIndex = cardOrder[currentIndex];
         animateCard(actualIndex);
-        currentIndex = (currentIndex - 1 + baseCards.length) % baseCards.length;
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
         timeoutRef.current = setTimeout(animate, 1700);
       }
     };
@@ -128,14 +168,26 @@ function Deck() {
   };
 
   useEffect(() => {
-    startAnimation();
+    if (cards.length > 0) {
+      startAnimation();
+    }
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [cards.length]);
+
+  if (cards.length === 0) {
+    return (
+      <div className={styles.container}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-400">Loading images...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -146,7 +198,7 @@ function Deck() {
           style={{
             x,
             y,
-            zIndex: baseCards.length - cardOrder.indexOf(i),
+            zIndex: cards.length - cardOrder.indexOf(i),
             position: 'absolute',
             transform: `translateY(${cardOrder.indexOf(i) * -4}px)`,
           }}
@@ -155,7 +207,7 @@ function Deck() {
             className={styles.card}
             style={{
               transform: interpolate([rot, scale], trans),
-              backgroundImage: `url(${baseCards[i]})`,
+              backgroundImage: `url(${cards[i]})`,
               touchAction: 'none',
             }}
           >

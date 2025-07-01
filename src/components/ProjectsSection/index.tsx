@@ -1,55 +1,83 @@
-import dynamic from 'next/dynamic';
+'use client';
 
-const ProjectGrid = dynamic(() => import('./ProjectGrid'), {
-  ssr: true
-});
+import { useState, useEffect } from 'react';
+import { CategoryFilter } from './CategoryFilter';
+import { ProjectCard } from './ProjectCard';
+import { categories as staticCategories, projects } from './data';
+import { Category } from '@/types';
 
-import { categories, projects } from './data';
+interface DynamicCategory {
+  id: string;
+  name: string;
+  label: string;
+  description?: string;
+  isEnabled: boolean;
+  order: number;
+}
 
-export const ProjectsSection = () => {
+export default function ProjectsSection() {
+  const [categories, setCategories] = useState<Category[]>(staticCategories);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/homepage-settings');
+      const data = await response.json();
+      
+      if (data.success && data.settings.collectionCategories?.length > 0) {
+        const dynamicCategories: Category[] = data.settings.collectionCategories
+          .filter((cat: DynamicCategory) => cat.isEnabled)
+          .sort((a: DynamicCategory, b: DynamicCategory) => a.order - b.order)
+          .map((cat: DynamicCategory) => ({
+            id: cat.id,
+            name: cat.name,
+            label: cat.label
+          }));
+        
+        // Add 'all' category at the beginning
+        setCategories([
+          { id: 'all', name: 'All', label: 'All' },
+          ...dynamicCategories
+        ]);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Keep static categories on error
+    }
+  };
+
+  const filteredProjects = selectedCategory === 'all' 
+    ? projects 
+    : projects.filter(project => project.category === selectedCategory);
+
   return (
-    <>
-      <section id="collections" className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-100 via-stone-200 to-amber-100/30 opacity-90" />
-        
-        <div className="absolute inset-0 bg-[url('/noise.png')] mix-blend-soft-light opacity-50" />
-        
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-br from-amber-200/20 to-stone-400/20 blur-[100px] transform rotate-12" />
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-stone-300/20 to-amber-300/20 blur-[100px] transform -rotate-12" />
-        
-        <div className="container mx-auto px-6 relative">
-          <h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
+    <section id="collections" className="py-20 bg-white">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
             Our <span className="text-amber-600">Collections</span>
           </h2>
-          
-          <ProjectGrid 
-            initialProjects={projects}
-            categories={categories}
-          />
+          <p className="text-stone-600 max-w-2xl mx-auto">
+            Explore our extensive range of premium natural stones and designer tiles
+          </p>
         </div>
-      </section>
-{/*       
-      <section id="natural-stone" className="py-20 relative overflow-hidden bg-stone-50">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-8">Natural Stone Collection</h2>
-          <ProjectGrid 
-            initialProjects={projects.filter(p => p.category === 'natural-stone')}
-            categories={categories.filter(c => c.id === 'natural-stone')}
-          />
-        </div>
-      </section>
 
-      <section id="floor-tiles" className="py-20 relative overflow-hidden">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-8">Floor Tiles Collection</h2>
-          <ProjectGrid 
-            initialProjects={projects.filter(p => p.category === 'floor-tiles')}
-            categories={categories.filter(c => c.id === 'floor-tiles')}
-          />
+        <CategoryFilter
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
-      </section> */}
-    </>
+      </div>
+    </section>
   );
-};
-
-export default ProjectsSection; 
+} 

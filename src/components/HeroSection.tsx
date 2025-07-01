@@ -2,10 +2,54 @@
 
 import CardDeckSection from './CardDeckSection/CardDeckSection';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+interface HeroSettings {
+  title: string;
+  subtitle: string;
+  primaryButtonText: string;
+  primaryButtonLink: string;
+  secondaryButtonText: string;
+  secondaryButtonLink: string;
+}
+
+const defaultSettings: HeroSettings = {
+  title: 'Premium Natural Stone & Tiles',
+  subtitle: 'Transform your space with our exquisite collection of natural stones and premium tiles',
+  primaryButtonText: 'View Collections',
+  primaryButtonLink: '#collections',
+  secondaryButtonText: 'Contact Us',
+  secondaryButtonLink: '#contact'
+};
 
 export const HeroSection = () => {
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>(defaultSettings);
+
+  useEffect(() => {
+    fetchHeroSettings();
+  }, []);
+
+  const fetchHeroSettings = async () => {
+    try {
+      const response = await fetch('/api/homepage-settings');
+      const data = await response.json();
+      
+      if (data.success && data.settings.heroSection) {
+        setHeroSettings({
+          title: data.settings.heroSection.title || defaultSettings.title,
+          subtitle: data.settings.heroSection.subtitle || defaultSettings.subtitle,
+          primaryButtonText: data.settings.heroSection.primaryButtonText || defaultSettings.primaryButtonText,
+          primaryButtonLink: data.settings.heroSection.primaryButtonLink || defaultSettings.primaryButtonLink,
+          secondaryButtonText: data.settings.heroSection.secondaryButtonText || defaultSettings.secondaryButtonText,
+          secondaryButtonLink: data.settings.heroSection.secondaryButtonLink || defaultSettings.secondaryButtonLink,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching hero settings:', error);
+      // Keep default settings on error
+    }
+  };
+
   return (
     <section id="hero" className="relative min-h-screen flex flex-col lg:flex-row items-center justify-center overflow-hidden">
       {/* Background Effects */}
@@ -24,23 +68,23 @@ export const HeroSection = () => {
           className="w-full lg:w-1/3 text-center lg:text-left space-y-6 mt-8 lg:mt-0"
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-stone-800 to-stone-600 bg-clip-text text-transparent">
-            Premium Natural Stone & Tiles
+            {heroSettings.title}
           </h1>
           <p className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto lg:mx-0">
-            Transform your space with our exquisite collection of natural stones and premium tiles
+            {heroSettings.subtitle}
           </p>
           <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
             <a 
-              href="#collections" 
+              href={heroSettings.primaryButtonLink} 
               className="px-6 py-3 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors"
             >
-              View Collections
+              {heroSettings.primaryButtonText}
             </a>
             <a 
-              href="#contact" 
+              href={heroSettings.secondaryButtonLink} 
               className="px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-500 transition-colors"
             >
-              Contact Us
+              {heroSettings.secondaryButtonText}
             </a>
           </div>
         </motion.div>
